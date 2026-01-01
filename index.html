@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <link rel="icon" href="assent/favicon.png">
+  <meta charset="UTF-8" />
+  <title>ايات – الكريسماس</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+      text-align: center;
+      padding: 30px;
+      direction: rtl;
+    }
+
+    h1 { margin-bottom: 10px; }
+
+    .candles {
+      font-size: 30px;
+      margin: 20px 0;
+    }
+
+    .word {
+      font-size: 32px;
+      letter-spacing: 10px;
+      margin: 20px 0;
+    }
+
+    .letters button {
+      margin: 5px;
+      padding: 10px 14px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+    }
+
+    .letters button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+
+    .msg {
+      font-size: 22px;
+      margin-top: 20px;
+    }
+
+    #resetBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #f59e0b;
+      color: #000;
+    }
+
+    #resetBtn:hover {
+      background: #fbbf24;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎄 آخر حرف – إصدار الكريسماس</h1>
+<p>🎅خمن الاية🎅</p>
+
+<div class="candles" id="candles">🎅🎅🎅🎅🎅🎅🎅</div>
+<div class="word" id="word"></div>
+
+<div class="letters" id="letters"></div>
+
+<div class="msg" id="msg"></div>
+
+<button id="resetBtn">🔄 إعادة اللعبة</button>
+
+<script>
+  const words = [
+    "فستلد ابنا ويدعو اسمه يسوع لانه يخلص شعبه من خطاياهم",
+    "انه ولد لكم اليوم في مدينة داود مخلص هو المسيح الرب",
+    "المجد لله في الاعالي و علي الارض السلام و بالناس المسره",
+    "لا تخافوا فها انا ابشركم بفرح عظيم يكون لجميع الشعب",
+    "لا تخافي يا مريم لانك قد وجدت نعمه عند الله و ها انت ستحبلين و تلدين ابنا و تسمينه يسوع",
+    "الروح القدس يحل عليك وقوه العلي تظللك فلذلك ايضا القدوس المولود منك يدعي ابن الله"
+  ];
+
+  const maxMistakes = 7;
+  let word, guessed, mistakes;
+
+  const wordDiv = document.getElementById("word");
+  const lettersDiv = document.getElementById("letters");
+  const candlesDiv = document.getElementById("candles");
+  const msgDiv = document.getElementById("msg");
+  const resetBtn = document.getElementById("resetBtn");
+
+  function initGame() {
+    word = words[Math.floor(Math.random() * words.length)];
+    guessed = [];
+    mistakes = 0;
+    msgDiv.textContent = "";
+    lettersDiv.innerHTML = "";
+    updateCandles();
+    displayWord();
+    createLetterButtons();
+  }
+
+  function displayWord() {
+    wordDiv.innerHTML = word
+      .split("")
+      .map(l => (l === " " ? "&nbsp;" : guessed.includes(l) ? l : "_"))
+      .join("");
+  }
+
+  function updateCandles() {
+    candlesDiv.textContent = "🎅".repeat(maxMistakes - mistakes);
+  }
+
+  function checkWin() {
+    if (!word.split("").some(l => l !== " " && !guessed.includes(l))) {
+      msgDiv.textContent = "🎉 لقد فزت!";
+      disableAll();
+    }
+  }
+
+  function disableAll() {
+    document.querySelectorAll(".letters button").forEach(b => b.disabled = true);
+  }
+
+  function createLetterButtons() {
+    "ابتثجحخدذرزسشصضطظعغفقكلمنهوي".split("").forEach(letter => {
+      const btn = document.createElement("button");
+      btn.textContent = letter;
+      btn.onclick = () => {
+        btn.disabled = true;
+        if (word.includes(letter)) {
+          guessed.push(letter);
+          displayWord();
+          checkWin();
+        } else {
+          mistakes++;
+          updateCandles();
+          if (mistakes === maxMistakes) {
+            msgDiv.textContent = "🎅 انتهت اللعبة! الكلمة كانت: " + word;
+            disableAll();
+          }
+        }
+      };
+      lettersDiv.appendChild(btn);
+    });
+  }
+
+  resetBtn.onclick = initGame;
+
+  // بدء اللعبة لأول مرة
+  initGame();
+</script>
+
+</body>
+</html>
